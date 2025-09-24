@@ -1,0 +1,156 @@
+{
+    "clients": [
+      {
+        "id": 1,
+        "name": "Mary Mugo",
+        "phone": "0712345678",
+        "idNumber": "12345678",
+        "borrowedAmount": 50000,
+        "borrowedDate": "2024-09-22T00:00:00.000Z",
+        "expectedReturnDate": "2024-09-29T00:00:00.000Z",
+        "amountPaid": 0,
+        "status": "active",
+        "livestockType": "goats",
+        "livestockCount": 5,
+        "livestockValue": 60000
+      },
+      {
+        "id": 2,
+        "name": "Joseph Ngugi",
+        "phone": "0723456789",
+        "idNumber": "23456789",
+        "borrowedAmount": 30000,
+        "borrowedDate": "2024-09-17T00:00:00.000Z",
+        "expectedReturnDate": "2024-09-24T00:00:00.000Z",
+        "amountPaid": 20000,
+        "status": "active",
+        "livestockType": "cattle",
+        "livestockCount": 2,
+        "livestockValue": 40000
+      },
+      {
+        "id": 3,
+        "name": "Samuel Parmale",
+        "phone": "0734567890",
+        "idNumber": "34567890",
+        "borrowedAmount": 25000,
+        "borrowedDate": "2024-09-15T00:00:00.000Z",
+        "expectedReturnDate": "2024-09-22T00:00:00.000Z",
+        "amountPaid": 0,
+        "status": "overdue",
+        "livestockType": "sheep",
+        "livestockCount": 8,
+        "livestockValue": 32000
+      },
+      {
+        "id": 4,
+        "name": "John Doe",
+        "phone": "0745678901",
+        "idNumber": "45678901",
+        "borrowedAmount": 40000,
+        "borrowedDate": "2024-09-18T00:00:00.000Z",
+        "expectedReturnDate": "2024-09-25T00:00:00.000Z",
+        "amountPaid": 52000,
+        "status": "completed",
+        "livestockType": "goats",
+        "livestockCount": 4,
+        "livestockValue": 48000
+      },
+      {
+        "id": 5,
+        "name": "Leah Mugo",
+        "phone": "0756789012",
+        "idNumber": "56789012",
+        "borrowedAmount": 35000,
+        "borrowedDate": "2024-09-23T00:00:00.000Z",
+        "expectedReturnDate": "2024-09-30T00:00:00.000Z",
+        "amountPaid": 15000,
+        "status": "active",
+        "livestockType": "cattle",
+        "livestockCount": 3,
+        "livestockValue": 45000
+      }
+    ],
+    "transactions": [
+      {
+        "id": 1,
+        "clientId": 1,
+        "clientName": "Mary Mugo",
+        "type": "loan",
+        "amount": 50000,
+        "method": "cash",
+        "date": "2024-09-22T00:00:00.000Z",
+        "status": "completed"
+      },
+      {
+        "id": 2,
+        "clientId": 2,
+        "clientName": "Joseph Ngugi",
+        "type": "loan",
+        "amount": 30000,
+        "method": "mpesa",
+        "date": "2024-09-17T00:00:00.000Z",
+        "status": "completed"
+      },
+      {
+        "id": 3,
+        "clientId": 2,
+        "clientName": "Joseph Ngugi",
+        "type": "payment",
+        "amount": 20000,
+        "method": "mpesa",
+        "date": "2024-09-23T00:00:00.000Z",
+        "status": "completed"
+      },
+      {
+        "id": 4,
+        "clientId": 4,
+        "clientName": "John Doe",
+        "type": "payment",
+        "amount": 52000,
+        "method": "cash",
+        "date": "2024-09-23T00:00:00.000Z",
+        "status": "completed"
+      }
+    ],
+    "applications": [
+      {
+        "id": 1,
+        "name": "Peter Kamau",
+        "phone": "0767890123",
+        "idNumber": "67890123",
+        "loanAmount": 45000,
+        "livestockType": "cattle",
+        "livestockCount": 3,
+        "estimatedValue": 50000,
+        "location": "Isinya Town, near the market",
+        "additionalInfo": "Urgent loan needed for school fees",
+        "status": "pending",
+        "date": "2024-09-23T00:00:00.000Z",
+        "photos": ["cattle1.jpg", "cattle2.jpg"]
+      }
+    ],
+    "livestockGallery": [
+      {
+        "id": 1,
+        "title": "Premium Dairy Cattle",
+        "type": "cattle",
+        "price": 45000,
+        "availableDate": "2024-09-27T00:00:00.000Z",
+        "description": "High-quality dairy cattle from defaulted loan. Excellent milk production.",
+        "images": ["/placeholder.svg?height=300&width=400", "/placeholder.svg?height=300&width=400"],
+        "daysRemaining": 3
+      },
+      {
+        "id": 2,
+        "title": "Healthy Goat Herd",
+        "type": "goats",
+        "price": 25000,
+        "availableDate": "2024-09-25T00:00:00.000Z",
+        "description": "5 healthy goats suitable for breeding or meat production.",
+        "images": ["/placeholder.svg?height=300&width=400", "/placeholder.svg?height=300&width=400"],
+        "daysRemaining": 1
+      }
+    ]
+  }
+  
