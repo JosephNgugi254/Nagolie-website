@@ -381,7 +381,7 @@
                                     <option value="cattle">Cattle</option>
                                     <option value="goats">Goats</option>
                                     <option value="sheep">Sheep</option>
-                                    <option value="chickens">Chickens</option>
+                                    <option value="poultry">Poultry</option>
                                 </select>
                             </div>
                         </div>
@@ -405,6 +405,68 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Add to Gallery</button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Livestock Modal -->
+    <div class="modal fade" id="editLivestockModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Livestock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editLivestockForm">
+                        <input type="hidden" id="editLivestockId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editLivestockTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="editLivestockTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editLivestockType" class="form-label">Type</label>
+                                    <select class="form-control" id="editLivestockType" required>
+                                        <option value="cattle">Cattle</option>
+                                        <option value="goats">Goats</option>
+                                        <option value="sheep">Sheep</option>
+                                        <option value="poultry">Poultry</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editLivestockPrice" class="form-label">Price (KES)</label>
+                                    <input type="number" class="form-control" id="editLivestockPrice" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAvailableDate" class="form-label">Available Date</label>
+                                    <input type="date" class="form-control" id="editAvailableDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editLivestockImages" class="form-label">Add New Images</label>
+                                    <input type="file" class="form-control" id="editLivestockImages" multiple accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLivestockDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editLivestockDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Current Images</label>
+                            <div class="row" id="currentImages">
+                                <!-- Current images will be displayed here -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editLivestockForm" class="btn btn-primary">Save Changes</button>
                 </div>
             </div>
         </div>

@@ -15,24 +15,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize sample data with localStorage persistence
 function initializeData() {
-    // Load applications from localStorage first
+    // Load ALL data from localStorage first
     loadApplicationsFromStorage();
+    loadLivestockGalleryFromStorage(); // NEW: Load livestock gallery from localStorage
     
-    // Only use sample data if no stored applications exist
+    // Only use sample data if no stored data exists
     if (applications.length === 0) {
         applications = getSampleApplications();
         saveApplicationsToStorage();
     }
     
+    if (livestockGallery.length === 0) {
+        livestockGallery = getSampleGallery();
+        saveLivestockGalleryToStorage(); // NEW: Save to localStorage
+    }
+    
     clients = getSampleClients();
     transactions = getSampleTransactions();
-    livestockGallery = getSampleGallery();
     
     // Sync with global scope
     window.clients = clients;
     window.transactions = transactions;
     window.applications = applications;
     window.livestockGallery = livestockGallery;
+}
+
+// NEW FUNCTION: Load livestock gallery from localStorage
+function loadLivestockGalleryFromStorage() {
+    try {
+        const stored = localStorage.getItem('livestockGallery');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            // Convert date strings back to Date objects and remove daysRemaining if it exists
+            livestockGallery = parsed.map(item => ({
+                ...item,
+                availableDate: new Date(item.availableDate)
+                // Remove daysRemaining property if it exists - we'll calculate it dynamically
+            }));
+            // Remove daysRemaining property from each item
+            livestockGallery.forEach(item => {
+                if (item.hasOwnProperty('daysRemaining')) {
+                    delete item.daysRemaining;
+                }
+            });
+            window.livestockGallery = livestockGallery;
+        }
+    } catch (error) {
+        console.error('Error loading livestock gallery from storage:', error);
+    }
+}
+
+// NEW FUNCTION: Save livestock gallery to localStorage
+function saveLivestockGalleryToStorage() {
+    try {
+        localStorage.setItem('livestockGallery', JSON.stringify(livestockGallery));
+        window.livestockGallery = livestockGallery;
+    } catch (error) {
+        console.error('Error saving livestock gallery to storage:', error);
+    }
 }
 
 // NEW FUNCTION: Save applications to localStorage
@@ -217,8 +257,8 @@ function getSampleGallery() {
             images: [
                 "public/dairy-cattle-close-up.jpg",
                 "public/dairy-cattle-in-grazing.jpg"
-            ],
-            daysRemaining: 3
+            ]
+            // Remove daysRemaining - it will be calculated dynamically
         },
         {
             id: 2,
@@ -230,8 +270,8 @@ function getSampleGallery() {
             images: [
                 "public/goat-herd-grazing.jpg",
                 "public/goats-in-farm-setting.jpg"
-            ],
-            daysRemaining: 1
+            ]
+            // Remove daysRemaining - it will be calculated dynamically
         }
     ];
 }
@@ -358,6 +398,18 @@ function loadGallery() {
 
     galleryContainer.innerHTML = '';
 
+    if (livestockGallery.length === 0) {
+        galleryContainer.innerHTML = `
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No livestock available at the moment. Please check back later.
+                </div>
+            </div>
+        `;
+        return;
+    }
+
     livestockGallery.forEach(item => {
         const galleryItem = createGalleryItem(item);
         galleryContainer.appendChild(galleryItem);
@@ -369,20 +421,45 @@ function createGalleryItem(item) {
     const col = document.createElement('div');
     col.className = 'col-md-6 col-lg-4 mb-4';
 
-    const urgentClass = item.daysRemaining <= 1 ? 'urgent' : '';
+    // Calculate actual days remaining based on current date
+    const actualDaysRemaining = calculateDaysRemaining(item.availableDate);
+    
+    // Determine the display text based on days remaining
+    let daysText = '';
+    if (actualDaysRemaining > 1) {
+        daysText = `Available in ${actualDaysRemaining} days`;
+    } else if (actualDaysRemaining === 1) {
+        daysText = 'Available in 1 day';
+    } else if (actualDaysRemaining === 0) {
+        daysText = 'Available today';
+    } else {
+        daysText = 'Available';
+    }
+
+    const urgentClass = actualDaysRemaining <= 1 ? 'urgent' : '';
+    
+    // Use first image or placeholder if no images exist
+    const primaryImage = item.images && item.images.length > 0 
+        ? item.images[0] 
+        : `https://via.placeholder.com/400x300/007bff/ffffff?text=${encodeURIComponent(item.type)}`;
     
     col.innerHTML = `
         <div class="livestock-card">
             <div class="position-relative">
                 <div id="carousel-${item.id}" class="carousel slide livestock-carousel" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        ${item.images.map((image, index) => `
+                        ${item.images && item.images.length > 0 ? item.images.map((image, index) => `
                             <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                                <img src="${image}" class="d-block w-100" alt="${item.title}">
+                                <img src="${image}" class="d-block w-100" alt="${item.title}" 
+                                     onerror="this.src='https://via.placeholder.com/400x300/007bff/ffffff?text=${encodeURIComponent(item.type)}'">
                             </div>
-                        `).join('')}
+                        `).join('') : `
+                            <div class="carousel-item active">
+                                <img src="${primaryImage}" class="d-block w-100" alt="${item.title}">
+                            </div>
+                        `}
                     </div>
-                    ${item.images.length > 1 ? `
+                    ${item.images && item.images.length > 1 ? `
                         <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${item.id}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
                         </button>
@@ -392,7 +469,7 @@ function createGalleryItem(item) {
                     ` : ''}
                 </div>
                 <div class="days-remaining ${urgentClass}">
-                    ${item.daysRemaining} day${item.daysRemaining !== 1 ? 's' : ''} left
+                    ${daysText}
                 </div>
             </div>
             <div class="card-body">
@@ -409,6 +486,14 @@ function createGalleryItem(item) {
     `;
 
     return col;
+}
+
+// NEW FUNCTION: Check if image exists
+function checkImageExists(url, callback) {
+    const img = new Image();
+    img.onload = function() { callback(true); };
+    img.onerror = function() { callback(false); };
+    img.src = url;
 }
 
 // Inquire about livestock
@@ -478,6 +563,56 @@ function getPendingApplicationsCount() {
     return applications.filter(app => app.status === 'pending').length;
 }
 
+
+
+
+// Terms and Conditions Popup Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const termsLink = document.getElementById('termsLink');
+    const termsPopup = document.getElementById('termsPopup');
+    const closePopup = document.getElementById('closePopup');
+    const closePopupBtn = document.getElementById('closePopupBtn');
+    
+    // Open popup when terms link is clicked
+    termsLink.addEventListener('click', function() {
+        termsPopup.style.display = 'flex';
+    });
+    
+    // Close popup when close button is clicked
+    closePopup.addEventListener('click', function() {
+        termsPopup.style.display = 'none';
+    });
+    
+    // Close popup when close button in footer is clicked
+    closePopupBtn.addEventListener('click', function() {
+        termsPopup.style.display = 'none';
+    });
+    
+    // Close popup when clicking outside the content
+    termsPopup.addEventListener('click', function(e) {
+        if (e.target === termsPopup) {
+            termsPopup.style.display = 'none';
+        }
+    });
+    
+    // Form submission handling
+    const loanForm = document.getElementById('loanApplicationForm');
+    loanForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Check if terms are agreed to
+        const agreeTerms = document.getElementById('agreeTerms');
+        if (!agreeTerms.checked) {
+            alert('Please agree to the terms and conditions before submitting your application.');
+            return;
+        }
+        
+        // Here you would typically submit the form data to your server
+        alert('Application submitted successfully! We will contact you shortly.');
+        loanForm.reset();
+    });
+});
+
 // Export functions for admin use
 window.clients = clients;
 window.transactions = transactions;
@@ -490,11 +625,12 @@ window.showAlert = showAlert;
 window.getPendingApplicationsCount = getPendingApplicationsCount;
 window.saveApplicationsToStorage = saveApplicationsToStorage;
 window.loadApplicationsFromStorage = loadApplicationsFromStorage;
-
-
 window.saveClientsToStorage = saveClientsToStorage;
 window.saveTransactionsToStorage = saveTransactionsToStorage;
 window.loadClientsFromStorage = loadClientsFromStorage;
 window.loadTransactionsFromStorage = loadTransactionsFromStorage;
 window.getSampleClients = getSampleClients;
 window.getSampleTransactions = getSampleTransactions;
+window.saveLivestockGalleryToStorage = saveLivestockGalleryToStorage; // NEW
+window.loadLivestockGalleryFromStorage = loadLivestockGalleryFromStorage; // NEW
+window.loadGallery = loadGallery; // NEW - Make loadGallery available globally
